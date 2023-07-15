@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>expense</title>
+</head>
+<body>
+    <section class="container">
+        <header>Expenses</header>
+        <form class="form" onsubmit="savetolocalstorage(event)">
+           <div class="input-box">
+            <label for="expense">Expense</label>
+            <input type="number" id="expense" name="expense" placeholder="enter expense">
+           </div>
+           <div class="input-box">
+            <label for="description">Description</label>
+            <input type="text" name="description" id="description" placeholder="enter description">
+           </div>
+           <div class="input-box">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+                <option value="select">select</option>
+                <option value="food">food</option>
+                <option value="petrol">petrol</option>
+                <option value="party">party</option>
+                <option value="rent">rent</option>
+            </select>
+            </div>
+            <button type="submit">Add Expense</button>
+        </form>
+    </section>
+
+<ul id="listofitem"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script>
+   async function savetolocalstorage(e)
+    {
+        try{
+            e.preventDefault();
+        const expense = e.target.expense.value;
+        const description = e.target.description.value;
+        const category = e.target.category.value;
+
+        const obj = {
+            expense,
+            description,
+            category
+        }
+     await axios.post("http://localhost:3000/expense",obj)
+     showOnScreen(obj);
+        }catch(err){
+            res.status(500).json({err:err});
+        }    
+    }
+    
+    function showOnScreen(obj)
+    {  try{
+        const parentEle = document.getElementById('listofitem');
+       const childEle = document.createElement('li');
+       childEle.textContent = `${obj.expense}-${obj.description}-${obj.category}`;
+       
+       const deleteBtn = document.createElement('input');
+       deleteBtn.type = "submit";
+       deleteBtn.value = "Delete";
+       childEle.appendChild(deleteBtn);
+
+       deleteBtn.onclick = ()=>{
+        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`) 
+        localStorage.removeItem(deleteBtn);
+        parentEle.removeChild(childEle);
+         }
+         parentEle.append(childEle);
+    }catch(err){
+        res.status(501).json({err:err});
+    }
+
+    }
+
+    window.addEventListener("DOMContentLoaded",async()=>{
+    await axios.get("http://localhost:3000/get_expenses")
+    .then((result)=>{ 
+        for(let i=0; i<result.data.length; i++){
+             showOnScreen(result.data[i]);
+        }
+    })
+    .catch((err)=>{
+        res.status(502).json({err:err});
+    })
+   })
+</script>
+</body>
+</html>
