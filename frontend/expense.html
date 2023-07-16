@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>expense</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <section class="container">
@@ -48,7 +49,8 @@
             description,
             category
         }
-     await axios.post("http://localhost:3000/expense",obj)
+        const token = localStorage.getItem('token');
+     await axios.post("http://localhost:3000/expense" , obj  , {headers:{"authorization":token}})
      showOnScreen(obj);
         }catch(err){
             res.status(500).json({err:err});
@@ -67,10 +69,12 @@
        childEle.appendChild(deleteBtn);
 
        deleteBtn.onclick = ()=>{
-        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`) 
+        const token = localStorage.getItem('token');
+        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`,{headers:{"authorization":token}}) 
         localStorage.removeItem(deleteBtn);
         parentEle.removeChild(childEle);
-         }
+        }
+
          parentEle.append(childEle);
     }catch(err){
         res.status(501).json({err:err});
@@ -79,7 +83,8 @@
     }
 
     window.addEventListener("DOMContentLoaded",async()=>{
-    await axios.get("http://localhost:3000/get_expenses")
+        const token = localStorage.getItem('token');
+    await axios.get("http://localhost:3000/get_expenses",{headers:{"authorization":token}})
     .then((result)=>{ 
         for(let i=0; i<result.data.length; i++){
              showOnScreen(result.data[i]);
