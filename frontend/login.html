@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign_up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <section class="container">
   <header>User_Login</header>
-<form onsubmit="savetolocalstaorage(event)" class="form">
+<form onsubmit="login(event)" class="form">
 
   <div class="input-box">
     <label for="email">Email</label>
@@ -25,11 +25,10 @@
   <a href="http://127.0.0.1:5500/frontend/index.html">resister new user / User_Sign_up</a>
 </form>
 </section>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 
 <script>
-  async function savetolocalstaorage(event){
+   async function login(event){
 
   event.preventDefault();
   const email = event.target.email.value;
@@ -40,15 +39,17 @@
      password
   }
 
- await axios.post("http://localhost:3000/User", obj)
-.then(response=>{
-  alert.response.data;
+await axios.post("http://localhost:3000/login", obj)
+.then((response)=>{
+    alert(response.data.message)
+    localStorage.setItem('token', response.data.token);
+    window.location.href = "./expense.html";
 })
 .catch((err)=>{
-  console.log(err);
-  document.body.innerHTML+=`<div style= "color:red;">${err.massage}</div>`
+  document.body.innerHTML+=`<div style= "color:black;">${err.response.data.message}</div>`
 })
   }
 </script>
+
 </body>
 </html>

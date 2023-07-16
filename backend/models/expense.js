@@ -8,7 +8,7 @@ const expense = sequelize.define('expense',{
         autoIncrement:true,
         primaryKey:true
     },
-    expense:{
+    expense:{ 
         type:Sequelize.INTEGER,
         allowNUll:false
     },
@@ -19,6 +19,10 @@ const expense = sequelize.define('expense',{
     category:{
         type:Sequelize.STRING,
         allowNUll:false 
+    },
+    userId:{
+       type:Sequelize.INTEGER,
+       allowNUll:false   
     }
 });
 

@@ -34,7 +34,7 @@ body{
 
 .container .form {
     margin-top: 30px;
-}
+ } 
 
 .form .input-box {
     margin-top: 20px;
@@ -57,7 +57,7 @@ color: rgb(1, 18, 19);
     border-radius: 6px;
     padding: 0 15px;
 }
-/*  */
+
 .form button{
     height: 55px;
     width: 100%;
@@ -71,6 +71,8 @@ color: rgb(1, 18, 19);
     background-color: rgb(130, 106,251);
 }
 
+
 .form button:hover{
     background-color: rgb(9, 17, 241);
 }
+
