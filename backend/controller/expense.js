@@ -2,7 +2,7 @@ const expense_model = require('../models/expense');
 
 exports.expense = (req, res, next)=>{
 const {expense, description, category} = req.body;
-
+     
     expense_model.create({expense:expense, description:description,category:category, userId:req.user.id})
     .then((result)=>{
     res.status(200).json({result:result});

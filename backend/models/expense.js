@@ -1,7 +1,7 @@
 const sequelize = require('../database/mysql');
 const Sequelize = require('sequelize');
 
-const expense = sequelize.define('expense',{
+const Expense = sequelize.define('expense',{
     id:{
         type:Sequelize.INTEGER,
         allowNUll:false,
@@ -26,4 +26,4 @@ const expense = sequelize.define('expense',{
     }
 });
 
-module.exports = expense;
+module.exports = Expense;
