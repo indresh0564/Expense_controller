@@ -8,10 +8,11 @@ const jwt = require('jsonwebtoken');
         
         user_model.findByPk(user.userId)
         .then((user)=>{
-            req.user = user;
+            req.user = user; //v-imp
             next();
         })
         .catch(err=>res.status(500).json({error:err}));
         }
-        module.exports = { authenticate };  
+
+    module.exports = { authenticate };  
 
