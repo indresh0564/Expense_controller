@@ -43,23 +43,29 @@
 
 document.getElementById('rzp-button1').onclick = async function(e){
     const  token = localStorage.getItem('token');
-    console.log(token);
-    const response = await axios.get("http://localhost:3000/get_order",{headers:{"authorization":token}})
+    const response = await axios.get("http://localhost:3000/get_order",{headers:{"Authorization":token}})
+    
+    var option = {
+        "key": response.data.key_id,
+        "order_id":response.data.order.id,
 
-    // var option = {
-    //     "key": response.data.key_id,
-    //     "order_id":response.data.order_id,
+        "handler": async function(response){
+           await axios.post("http://localhost:3000/post_order",{
+            order_id : option.order_id,
+            payment_id : response.razorpay_payment_id,
+           },{headers:{"authorization":token}}) 
 
-    //     "handler": async function(response){
-    //        await axios.post("http://localhost:3000/post_order",{
-    //         order_id : option.order_id,
-    //         payment_id : response.razorpay_payment_id,
-    //        },{headers:{"authorization":token}}) 
+           alert("you are a Premium User Now")
+        } 
+    }
+    const rzp1 = new Razorpay(option);
+    rzp1.open();
+    e.preventDefault();
 
-    //        alert("you are a Premium User Now")
-    //     } 
-    // }
-    // const rzp1 = new RazorPay(option);
+    rzp1.on('payment.failed', function(response){
+        console.log(response);
+        alert("Something went wrong");
+    })
     }
 
    async function savetolocalstorage(e)
@@ -76,11 +82,11 @@ document.getElementById('rzp-button1').onclick = async function(e){
             category
         }
         const token = localStorage.getItem('token');
-       await axios.post("http://localhost:3000/expense" , obj  , {headers:{"authorization":token}})
-     showOnScreen(obj);
+       await axios.post("http://localhost:3000/expense" , obj  , {headers:{"Authorization":token}})
+       showOnScreen(obj);
+
         }catch(err){
-            console.log(err);
-            // res.status(500).json({err:err});
+            res.status(500).json({err:err});
         }    
     }
     
@@ -95,9 +101,9 @@ document.getElementById('rzp-button1').onclick = async function(e){
        deleteBtn.value = "Delete";
        childEle.appendChild(deleteBtn);
 
-       deleteBtn.onclick = ()=>{
+       deleteBtn.onclick = (req,res)=>{
         const token = localStorage.getItem('token');
-        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`,{headers:{"authorization":token}}) 
+        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`,{headers:{"Authorization":token}}) 
         localStorage.removeItem(deleteBtn);
         parentEle.removeChild(childEle);
         }
@@ -109,9 +115,9 @@ document.getElementById('rzp-button1').onclick = async function(e){
 
     }
 
-    window.addEventListener("DOMContentLoaded",async()=>{
+    window.addEventListener("DOMContentLoaded",async(req,res)=>{
         const token = localStorage.getItem('token');
-    await axios.get("http://localhost:3000/get_expenses",{headers:{"authorization":token}})
+    await axios.get("http://localhost:3000/get_expenses",{headers:{"Authorization":token}})
     .then((result)=>{ 
         for(let i=0; i<result.data.length; i++){
              showOnScreen(result.data[i]);

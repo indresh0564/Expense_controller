@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const purchasepremium = async (req,res)=>{
     try{
         var rzp = new RazorPay({
-            key_id: 'rzp_test_3rO13alObCOmE1',
-            key_secret: 'CpkI41J13Yk25IwLKnUFznqg'
+            key_id: 'rzp_test_BNy26oDLgAB731',
+            key_secret: 'zdX23uHXjUcElB4Bh07o37UY'
         }) 
         const amount = 2500;
     
@@ -15,13 +15,13 @@ const purchasepremium = async (req,res)=>{
             if(err){
                 throw new Error(JSON.stringify(err));  
             }
-            console.log(order);
-        //    await req.user.createOrder({ orderid: order.id, status:'PENDING'})
-        await Order.create({ orderid: order.id, status:'PENDING'})
+
+    //  await req.user.createOrder({ orderid: order.id, status:'PENDING'})
+        await Order.create({ orderid: order.id, status:'PENDING' ,userId:req.user.id})
         .then(()=>{
                 return res.status(201).json({order, key_id: rzp.key_id});
             })
-            .catch((err)=>{
+        .catch((err)=>{
                 throw new Error(JSON.stringify(err));  
             })
         })
@@ -30,4 +30,37 @@ const purchasepremium = async (req,res)=>{
     }
     }
 
-    module.exports = {purchasepremium};
+    const updatepremium = (req,res,next)=>{
+    try{
+        const {payment_id, order_id} = req.body;
+
+        Order.findOne({where:{orderid:order_id}})
+        .then((order)=>{
+
+         order.update({paymentid:payment_id , status:'SUCCESSFUL'})
+         .then(()=>{
+
+             req.user.update({ispremiumuser:true})
+             .then(()=>{
+                return res.status(202).json({success:true, message:"TRansaction Successful"})
+             })
+             .catch((err)=>{
+                throw new Error(JSON.stringify(err));  
+            })
+
+         })
+         .catch((err)=>{
+            throw new Error(JSON.stringify(err));  
+        })
+
+        })
+        .catch((err)=>{
+            throw new Error(JSON.stringify(err));  
+        })
+
+    }catch(err){
+        res.status(509).json({error:err,message:"mission fail 1"})
+    }  
+    }
+
+    module.exports = {purchasepremium, updatepremium};

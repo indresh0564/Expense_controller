@@ -2,9 +2,9 @@ const user_model = require('../models/user');
 const jwt = require('jsonwebtoken');
 
     const authenticate = (req,res,next)=>{
-        const token = req.header('authorization');
+        const token = req.header('Authorization');
         
-        const user = jwt.verify(token,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c');
+        const user = jwt.verify(token,'secretKey');
         
         user_model.findByPk(user.userId)
         .then((user)=>{
