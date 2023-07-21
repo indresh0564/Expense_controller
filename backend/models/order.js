@@ -10,7 +10,10 @@ const Order = sequelize.define('order',{
     },
     paymentid:Sequelize.STRING,
     orderid:Sequelize.STRING,
-    status:Sequelize.STRING
+    status:Sequelize.STRING,
+    userId:{
+        type:Sequelize.INTEGER,
+     }
 })
 
 module.exports = Order;
