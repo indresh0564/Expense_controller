@@ -8,6 +8,7 @@ const user_routes = require('./routes/user');
 const login_routes = require('./routes/login');
 const expense_routes = require('./routes/expense');
 const order_routes = require('./routes/order');
+const leaderboard_routes = require('./routes/leaderboard');
 
 const User = require('./models/user');
 const Order = require('./models/order');
@@ -22,12 +23,13 @@ app.use(user_routes);
 app.use(login_routes);
 app.use(expense_routes);
 app.use(order_routes);
+app.use(leaderboard_routes);
 
-// User.hasMany(Expense);
-// Expense.belongsTo(User);
+User.hasMany(Expense);
+Expense.belongsTo(User);
 
-// User.hasMany(Order);
-// Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsTo(User);
 
 sequelize.sync()
 .then((result)=>{

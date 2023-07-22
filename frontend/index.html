@@ -54,7 +54,21 @@
      password
   }
 
-await axios.post("http://localhost:3000/User", obj);
+await axios.post("http://localhost:3000/User", obj)
+.then((response)=>{
+  alert("successfully resister");
+  event.target.reset();
+  if(response.status === 201){
+            window.location.href = "./login.html" //redirecting user to login page if response was successful
+            console.log('response from addmethod',response)
+        }else {
+            throw new error('Failed to login');
+        }
+})
+.catch((error)=>{
+console.log(error);
+})
+
 
 }
 </script>
