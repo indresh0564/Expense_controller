@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const purchasepremium = async (req,res)=>{
     try{
         var rzp = new RazorPay({
-            key_id: 'rzp_test_BNy26oDLgAB731',
-            key_secret: 'zdX23uHXjUcElB4Bh07o37UY'
+            key_id: 'rzp_test_3NQ3oP7JBbeXD4',
+            key_secret: 'e72E2GOc4c4z2uhnk77JAfC5'
         }) 
         const amount = 2500;
     

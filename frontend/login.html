@@ -42,6 +42,7 @@
 await axios.post("http://localhost:3000/login", obj)
 .then((response)=>{
     alert(response.data.message)
+    event.target.reset();
     localStorage.setItem('token', response.data.token);
     window.location.href = "./expense.html";
 })
