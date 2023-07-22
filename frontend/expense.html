@@ -35,45 +35,40 @@
             <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         </div>
         <div id="message"></div>
-        <div id="leaderboard">
-            
-        </div>
+        <div id="leaderboard"></div>
     </section>
-
-<ul id="listofitem"></ul>
-<ul id="listofleaderborad"></ul>
+<div id="listofitem"></div>
+<div id="leaderboard_id"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 <script>
 
-//  leaderboard button function 
-
-document.getElementById('leaderboard').onclick = async function(e){
-    const  token = localStorage.getItem('token');  
-    await axios.get("http://localhost:3000/leaderboard",{headers:{"Authorization":token}})
-    .then((leaderboard)=>{
-
-        for(let i=0; i<leaderboard.data.length; i++){
-            showOnLeaderboard(leaderboard.data[i]);
-        }
-    })
-    .catch((err)=>{
-        console.log(err);
-    })
-}
-
 //show Leaderboard On screen
 
-function showOnLeaderboard(obj){
-    try{
-        const parentEle = document.getElementById('listofleaderborad');
-       const childEle = document.createElement('li');
-       childEle.textContent = `${obj.name}-${obj.totalExpense}`;
+function showOnLeaderboard(){
+try{
+    const inputEle = document.createElement('input');
+inputEle.value = "Show Leaderboard";
+inputEle.type = "button";
+inputEle.onclick = async (e)=>{
+    const token = localStorage.getItem('token');  
+    const leaderboard_list = await axios.get("http://localhost:3000/leaderboard",{headers:{"Authorization":token}});
 
-         parentEle.append(childEle);
-    }catch(err){
-        res.status(501).json({err:err});
+    var leaderboardEle = document.getElementById('leaderboard_id');
+    leaderboardEle.innerHTML += '<h1>Leader Board</h1>';
+
+    leaderboard_list.data.forEach(element => {
+        leaderboardEle.innerHTML += `<li>Name - ${element.name} TotalExpense - ${element.totalExpense}</li>`;
+    });
+
     }
+    document.getElementById('message').innerHTML = "you are a premium user";
+    document.getElementById('message').appendChild(inputEle);
+
+}catch(err){
+console.log(err);
+}
+
 }
 
 //  buy premium button function 
@@ -94,8 +89,7 @@ document.getElementById('rzp-button1').onclick = async function(e){
 
            alert("you are a Premium User Now")
           document.getElementById('rzp-button1').style.visibility = 'hidden';
-          document.getElementById('message').innerHTML = "you are a premium user";
-          document.getElementById('leaderboard').innerHTML = '<button  type="submit" id="leaderboard_btn" >Leaderboard</button>';
+        showOnLeaderboard();
         } 
     }
     const rzp1 = new Razorpay(option);
@@ -126,7 +120,6 @@ document.getElementById('rzp-button1').onclick = async function(e){
         }
         const token = localStorage.getItem('token');
        await axios.post("http://localhost:3000/expense" , obj  , {headers:{"Authorization":token}})
-    //    await axios.post("http://localhost:3000/update_leaderboard" , obj , {headers:{"Authorization":token}});
        showOnScreen(obj);
 
         }catch(err){
@@ -169,12 +162,10 @@ document.getElementById('rzp-button1').onclick = async function(e){
 
     await axios.get("http://localhost:3000/ispremiumuser", {headers:{"Authorization":token}})
     .then((response)=>{
-console.log(response);
         if(response.data===true){
         document.getElementById('rzp-button1').style.visibility = 'hidden';
-        document.getElementById('message').innerHTML = "you are a premium user";
-        document.getElementById('leaderboard').innerHTML = '<button  type="submit" id="leaderboard_btn">Leaderboard</button>';
-        }
+        showOnLeaderboard();
+    }
 
     })
     .catch((err)=>{
