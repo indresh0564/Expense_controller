@@ -29,6 +29,9 @@ const User = sequelize.define('user',{
         type:Sequelize.STRING,
         allowNull:false,
     },
+
+    totalExpense:Sequelize.INTEGER,
+
     ispremiumuser:Sequelize.BOOLEAN
 
 });
