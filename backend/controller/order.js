@@ -45,17 +45,17 @@ const purchasepremium = async (req,res)=>{
                 return res.status(202).json({success:true, message:"TRansaction Successful"})
              })
              .catch((err)=>{
-                throw new Error(JSON.stringify(err));  
+                throw new Error(err);  
             })
 
          })
          .catch((err)=>{
-            throw new Error(JSON.stringify(err));  
+            throw new Error(err);  
         })
 
         })
         .catch((err)=>{
-            throw new Error(JSON.stringify(err));  
+            throw new Error(err);  
         })
 
     }catch(err){

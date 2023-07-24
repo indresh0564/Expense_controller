@@ -22,12 +22,11 @@ const User = (req,res,next)=>{
     }  
 };
 
-const ispremiumuser = (req,res,next)=>{
-    user_model.findByPk(req.user.id)
-    .then((user)=>{
-     res.status(207).json(user.dataValues.ispremiumuser);
-    })
-    .catch((err)=>{res.status(500).json({err:err});});
+const ispremiumuser = async(req,res,next)=>{
+    try{
+       const user = await user_model.findByPk(req.user.id);
+       res.status(207).json(user.dataValues.ispremiumuser);
+    }catch(err){res.status(500).json({err:err})};
 }
 
 module.exports = { ispremiumuser , User };
