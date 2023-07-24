@@ -9,10 +9,12 @@ const login_routes = require('./routes/login');
 const expense_routes = require('./routes/expense');
 const order_routes = require('./routes/order');
 const leaderboard_routes = require('./routes/leaderboard');
+const forgotpassword_routes = require('./routes/forgot_password');
 
 const User = require('./models/user');
 const Order = require('./models/order');
 const Expense = require('./models/expense');
+const forgotpassword = require('./controller/forgot_password');
 
 const app = Express();
 
@@ -24,6 +26,7 @@ app.use(login_routes);
 app.use(expense_routes);
 app.use(order_routes);
 app.use(leaderboard_routes);
+app.use(forgotpassword_routes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
