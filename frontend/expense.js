@@ -1,6 +1,8 @@
 
 //show Leaderboard On screen
 
+// const { express } = require("express");
+
 function showOnLeaderboard(){
 try{
     const inputEle = document.createElement('input');
@@ -14,7 +16,7 @@ try{
     leaderboardEle.innerHTML += '<h1>Leader Board</h1>';
 
     leaderboard_list.data.forEach(element => {
-        leaderboardEle.innerHTML += `<li>Name - ${element.name} TotalExpense - ${element.totalExpense}</li>`;
+        leaderboardEle.innerHTML += `<li>Name - ${element.name} TotalExpense - ${element.totalExpense||0}</li>`;
     });
 
     }
@@ -98,7 +100,7 @@ document.getElementById('rzp-button1').onclick = async function(e){
 
        deleteBtn.onclick = (req,res)=>{
         const token = localStorage.getItem('token');
-        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`,{headers:{"Authorization":token}}) 
+        axios.delete(`http://localhost:3000/delete_expense/${obj.id}`,{headers:{"Authorization":token}})
         localStorage.removeItem(deleteBtn);
         parentEle.removeChild(childEle);
         }
@@ -115,19 +117,21 @@ document.getElementById('rzp-button1').onclick = async function(e){
     const token = localStorage.getItem('token');
 
         // show leaderboard button and hide buyPremium button on screen
-
-    await axios.get("http://localhost:3000/ispremiumuser", {headers:{"Authorization":token}})
-    .then((response)=>{
+    // try{
+     axios.get("http://localhost:3000/ispremiumuser", {headers:{"Authorization":token}})
+     .then((response)=>{
+        console.log(response);
         if(response.data===true){
         document.getElementById('rzp-button1').style.visibility = 'hidden';
         showOnLeaderboard();
-    }
-
-    })
-    .catch((err)=>{
-        res.status(501).json({err:err});
-    })
-
+        // res.status(202).json({response:response});
+        }
+     })
+     .catch((err)=>{
+        res.status(501).json({Error:err});
+     })
+   
+    
         // show expenses on screen
 
     await axios.get("http://localhost:3000/get_expenses", {headers:{"Authorization":token}})
