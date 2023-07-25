@@ -8,6 +8,8 @@ try{
     const inputEle = document.createElement('input');
     inputEle.value = "Show Leaderboard";
     inputEle.type = "button";
+
+
     inputEle.onclick = async (e)=>{
     const token = localStorage.getItem('token');  
     const leaderboard_list = await axios.get("http://localhost:3000/leaderboard",{headers:{"Authorization":token}});
@@ -18,10 +20,36 @@ try{
     leaderboard_list.data.forEach(element => {
         leaderboardEle.innerHTML += `<li>Name - ${element.name} TotalExpense - ${element.totalExpense||0}</li>`;
     });
-
     }
+     
+    const download = document.createElement('input');
+    download.value = "Download Expense";
+    download.type = "button";
+
+    download.onclick = (e)=>{
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+        .then((response) => {
+            if(response.status === 201){
+                //the bcakend is essentially sending a download link
+                //  which if we open in browser, the file would download
+                var a = document.createElement("a");
+                a.href = response.data.fileUrl;
+                a.download = 'myexpense.csv';
+                a.click();
+            } else {
+                throw new Error(response.data.message)
+            }
+    
+        })
+        .catch((err) => {
+            showError(err)
+        });
+    }
+
     document.getElementById('message').innerHTML = "you are a premium user";
     document.getElementById('message').appendChild(inputEle);
+    document.getElementById('message').appendChild(download);
 
 }catch(err){
 console.log(err);
