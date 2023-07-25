@@ -5,6 +5,8 @@ const dotenv = require('dotenv').config();
 
 const User = require('../models/user');
 const forgotPassword = require('../models/forgotpassword');
+const { escape } = require('mysql');
+
 
 exports.forgotpassword = async(req,res)=>{
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
@@ -18,7 +20,6 @@ exports.forgotpassword = async(req,res)=>{
         const id = uuid.v4();
         const forgotpasswordcreate = await forgotPassword
         .create({ id, active: true, userId: user.id })
-        console.log(forgotpasswordcreate)
   
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
         const sender ={
@@ -36,7 +37,7 @@ exports.forgotpassword = async(req,res)=>{
           sender,
           to : receivers,
           subject : "Reset Your Password",
-          htmlContent: `<a href="http://localhost:5000/password/resetpassword/${id}">Reset password </a>`,
+          htmlContent: `<a href="http://localhost:3000/resetpassword/${id}">Reset password </a>`,
         };
   
         try{
@@ -52,9 +53,79 @@ exports.forgotpassword = async(req,res)=>{
     }catch(err){
       console.log(err);
       return res.status(500).json({message : err.message, success : false})
-    }
-    
   }
+}
+
+exports.reset = async(req,res,next)=>{
+console.log("fdfdd");
+const id = req.params.id;
+console.log(id);
+
+const  forgotpasswordrow= await forgotPassword.findOne({where:{id:id}})
+console.log(forgotpasswordrow);
+if(forgotpasswordrow.active === true){
+  forgotpasswordrow.update({active:false})
+console.log('haha hehe');
+res.status(201).send(`<html>
+<body>
+    <form action="/updatepassword/${id}" method="get">
+<div>
+    <label for="password">Password</label>
+    <input type="text" name="newPassword" required placeholder="enter password">
+</div>
+<button type="submit">reset password</button>
+    </form>
+</body>
+
+</html>`
+)
+res.end();
+}
+
+}
+
+exports.updatepassword = (req,res)=>{
+  const newPassword = req.query;
+  const updateid = req.params.updateid;
+  console.log(updateid);
+  console.log(newPassword.newPassword);
+
+forgotPassword.findOne({where:{id:updateid}})
+.then((forgotPasswordUser)=>{
+  User.findOne({where:{id:forgotPasswordUser.userId}})
+  .then((user)=>{
+
+  const saltrounds = 10;
+  bcrypt.genSalt(saltrounds, function(err, salt){
+  if(err){
+  console.log(err);
+  throw new Error(err);
+  }
+
+  bcrypt.hash(newPassword.newPassword , salt , function(err , hash){
+  if(err){
+    console.log(err);
+    throw new Error(err);
+  }
+
+  user.update({password:hash}).then(()=>{
+  res.status(201).json({message: 'Successfuly update the new password'})
+      })
+      .catch((err)=>{
+        throw new Error(err);
+      })
+    })
+  })
+
+})
+.catch((err)=>{
+  return res.status(404).json({ error: 'No user Exists', success: false})
+})
+.catch((err)=>{
+  return res.status(500).json(err);
+  })
+  })
+}
 
 
 
