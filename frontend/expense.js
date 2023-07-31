@@ -6,7 +6,32 @@ expenseList.addEventListener("click", deleteExpense);
 leaderboardBtn.addEventListener('click', updateLeaderboard);
 generateReportBtn.addEventListener('click', generateReport);
 
+const expensesPreferenceDropdown = document.getElementById('expensesPreference');
 
+
+function showPagination({
+  currentPage,
+  hasNextPage,
+  nextPage,
+  hasPreviousPage,
+  previousPage,
+}) {
+  
+  const button = document.getElementById('pagination');
+  let buttonsHTML = []; // Create an array to store the pagination buttons
+
+  if (hasPreviousPage) {
+      console.log("hasPreviousPage")
+      buttonsHTML.push(`<button class="btn btn-primary" onclick="showExpense(${previousPage})">Previous Page</button>`);
+  }
+
+  if (hasNextPage) {
+      console.log("hasNextPage")
+      buttonsHTML.push(`<button class="btn btn-primary" onclick="showExpense(${nextPage})">Next Page</button>`);
+  }
+
+  button.innerHTML = buttonsHTML.join(' ');
+}
 //show Leaderboard On screen
 
 // function showOnLeaderboard() {
@@ -156,6 +181,7 @@ async function savetolocalstorage(e) {
 
 function showOnScreen(obj) {
   try {
+
     let output = `<tr>
     <th scope="row">${obj.description}</th>
     <td>${obj.category}</td>
@@ -217,8 +243,33 @@ async function deleteExpense(e) {
   }
 }
 
+
+
 // show leaderboard button and hide buyPremium button on screen
 // show expenses on screen
+
+async function showExpense(page){
+  const token = localStorage.getItem("token");
+
+  const pagesize = 10;
+  if (!page || page < 1) {
+    page = 1;
+}
+  // const page =1;
+  await axios.get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
+        headers: { Authorization: token },
+      })
+      .then((result) => {
+        const{currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage} = result.data;
+        for (let i = 0; i < result.data.expenses.length; i++) {
+          showOnScreen(result.data.expenses[i]);
+        }
+        showPagination({currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage})
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+}
 
 window.addEventListener("DOMContentLoaded", (req, res) => {
   const token = localStorage.getItem("token");
@@ -243,18 +294,24 @@ window.addEventListener("DOMContentLoaded", (req, res) => {
          throw new Error(err);
       });
 
-    axios
-      .get("http://localhost:3000/get_expenses", {
-        headers: { Authorization: token },
-      })
-      .then((result) => {
-        for (let i = 0; i < result.data.length; i++) {
-          showOnScreen(result.data[i]);
-        }
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
+             // commit se h
+      const pagesize = 10;
+      const page = 1;
+      showExpense(page);
+    // axios
+    //   .get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
+    //     headers: { Authorization: token },
+    //   })
+    //   .then((result) => {
+    //     const{currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage} = result.data;
+    //     for (let i = 0; i < result.data.expenses.length; i++) {
+    //       showOnScreen(result.data.expenses[i]);
+    //     }
+    //     showPagination({currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage})
+    //   })
+    //   .catch((err) => {
+    //     throw new Error(err);
+    //   });
   } catch (err) {
     res.status(500).json({ err: err });
   }

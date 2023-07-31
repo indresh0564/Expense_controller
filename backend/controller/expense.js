@@ -80,13 +80,28 @@ exports.expense = async (req, res, next) => {
   }
 };
 
-exports.get_expenses = (req, res, next) => {
+exports.get_expenses = async(req, res, next) => {
+  const totalexpense = await expense_model.count({where : {userId : req.user.id}});
+
+  let page =+ req.query.page ||1;
+        const pageSize  =+req.query.pagesize || 3;
   expense_model
-    .findAll({ where: { userId: req.user.id } })
+    .findAll({ where: { userId: req.user.id } , 
+      offset : (page - 1) * pageSize,
+    limit: pageSize})
     .then((expenses) => {
-      res.status(201).json(expenses);
+      console.log(expenses);
+      res.status(201).json( {
+        expenses:expenses,
+        currentPage : page,
+        hasNextPage : page *pageSize < totalexpense,
+        nextPage : page +1,
+        hasPreviousPage : page >1,
+        previousPage : page -1,
+        lastPage : Math.ceil(totalexpense/pageSize)});
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json({ err: err });
     });
 };
