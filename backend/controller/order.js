@@ -7,14 +7,17 @@ const purchasepremium = async (req, res) => {
 
   try {
     var rzp = new RazorPay({
-      key_id: "rzp_test_W8nl09PMsPAPj6",
-      key_secret: "pyfDpoS89yFEcybSJrIzp8b8",
+      key_id: "rzp_test_vUiUP8D1CSHAmu",
+      key_secret: "JVguI62oiY7weZixqrcvLNKD",
     });
     const amount = 2500;
+    console.log(rzp);   
 
     await rzp.orders.create({ amount, currency: "INR" }, async (err, order) => {
       if (err) {
+        console.log(err);
         throw new Error(JSON.stringify(err));
+
       }
 
       //  await req.user.createOrder({ orderid: order.id, status:'PENDING'})

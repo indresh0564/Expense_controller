@@ -6,6 +6,8 @@ expenseList.addEventListener("click", deleteExpense);
 leaderboardBtn.addEventListener('click', updateLeaderboard);
 generateReportBtn.addEventListener('click', generateReport);
 
+window.addEventListener('load', showExpense());
+
 const expensesPreferenceDropdown = document.getElementById('expensesPreference');
 
 
@@ -171,6 +173,8 @@ async function savetolocalstorage(e) {
     await axios.post("http://localhost:3000/expense", obj, {
       headers: { Authorization: token },
     });
+    e.target.reset();
+
     showOnScreen(obj);
   } catch (err) {
     console.log(err);
@@ -243,7 +247,15 @@ async function deleteExpense(e) {
   }
 }
 
+function saveExpensePreference(expensePreference) {
+  localStorage.setItem('expensesPreference', expensePreference);
+  showExpense()
+}
 
+expensesPreferenceDropdown.addEventListener('change', function () {
+  const selectedValue = expensesPreferenceDropdown.value;
+  saveExpensePreference(selectedValue);
+});
 
 // show leaderboard button and hide buyPremium button on screen
 // show expenses on screen
@@ -251,11 +263,13 @@ async function deleteExpense(e) {
 async function showExpense(page){
   const token = localStorage.getItem("token");
 
-  const pagesize = 10;
-  if (!page || page < 1) {
-    page = 1;
-}
-  // const page =1;
+const expensePreference = localStorage.getItem('expensesPreference');
+
+    const pagesize = expensePreference ? parseInt(expensePreference) : 5;
+      if (!page || page < 1) {
+         page = 1;
+         }
+
   await axios.get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
         headers: { Authorization: token },
       })
@@ -295,23 +309,6 @@ window.addEventListener("DOMContentLoaded", (req, res) => {
       });
 
              // commit se h
-      const pagesize = 10;
-      const page = 1;
-      showExpense(page);
-    // axios
-    //   .get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
-    //     headers: { Authorization: token },
-    //   })
-    //   .then((result) => {
-    //     const{currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage} = result.data;
-    //     for (let i = 0; i < result.data.expenses.length; i++) {
-    //       showOnScreen(result.data.expenses[i]);
-    //     }
-    //     showPagination({currentPage, hasNextPage, nextPage, hasPreviousPage, previousPage, lastPage})
-    //   })
-    //   .catch((err) => {
-    //     throw new Error(err);
-    //   });
   } catch (err) {
     res.status(500).json({ err: err });
   }
