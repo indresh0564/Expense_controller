@@ -1,6 +1,8 @@
 const Express = require("express");
 const cors = require("cors");
 const body_parser = require("body-parser");
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const sequelize = require("./database/mysql");
 
@@ -14,11 +16,13 @@ const forgotpassword_routes = require("./routes/forgot_password");
 const User = require("./models/user");
 const Order = require("./models/order");
 const Expense = require("./models/expense");
-const forgotpassword = require("./controller/forgot_password");
+const forgotpassword = require("./models/forgotpassword");
 
 const app = Express();
 
 app.use(cors());
+app.use(helmet());
+app.use(morgan('combined'));
 
 app.use(body_parser.json({ extended: false }));
 app.use(user_routes);
@@ -33,6 +37,9 @@ Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(forgotpassword);
+forgotpassword.belongsTo(User);
 
 sequelize
   .sync()

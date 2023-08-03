@@ -5,36 +5,6 @@ const AWS = require('aws-sdk');
 const UserServices = require('../services/userServices');
 const awsS3Sevices = require('../services/awsS3Services'); 
 
-// async function uploadToS3(data , filename){
-
-// const IAM_USER_KEY = 'AKIA5AQPD7A6R5LKYK6M';
-// const IAM_USER_SECRET = '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';
-// const BucketName = 'indreshsahubucket';
-  
-// const s3bucket = new AWS.S3({
-//   accessKeyId:IAM_USER_KEY,
-//   secretAccessKey:IAM_USER_SECRET
-// })
-
-// var params = {
-//   Bucket:BucketName,
-//   Key:filename,
-//   Body:data,
-//   ACL:'public-read'
-// }
-
-// return new Promise((resolve , reject)=>{
-//   s3bucket.upload(params , (err , response)=>{
-//     if(err){
-//       console.log('somthing went wrong', err)
-//       reject(err);
-//     }else{
-//       console.log('success', response.Location);
-//       resolve(response.Location);
-//     }
-//   })
-// })
-// }
 
 exports.download = async(req, res)=>{
   try{
@@ -49,6 +19,7 @@ exports.download = async(req, res)=>{
     res.status(500).json({error:err, success:false});
   }
 }
+
 
 exports.expense = async (req, res, next) => {
   const t = await sequelize.transaction();
@@ -80,31 +51,37 @@ exports.expense = async (req, res, next) => {
   }
 };
 
-exports.get_expenses = async(req, res, next) => {
-  const totalexpense = await expense_model.count({where : {userId : req.user.id}});
 
-  let page =+ req.query.page ||1;
-        const pageSize  =+req.query.pagesize || 3;
-  expense_model
-    .findAll({ where: { userId: req.user.id } , 
-      offset : (page - 1) * pageSize,
-    limit: pageSize})
-    .then((expenses) => {
-      console.log(expenses);
-      res.status(201).json( {
-        expenses:expenses,
-        currentPage : page,
-        hasNextPage : page *pageSize < totalexpense,
-        nextPage : page +1,
-        hasPreviousPage : page >1,
-        previousPage : page -1,
-        lastPage : Math.ceil(totalexpense/pageSize)});
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ err: err });
-    });
+exports.get_expenses = async(req, res, next) => {
+  try{
+    const totalexpense = await expense_model.count({where : {userId : req.user.id}});
+
+    let page =+ req.query.page ||1;
+          const pageSize  =+req.query.pagesize || 3;
+    expense_model
+      .findAll({ where: { userId: req.user.id } , 
+        offset : (page - 1) * pageSize,
+      limit: pageSize})
+      .then((expenses) => {
+        
+        res.status(201).json( {
+          expenses:expenses,
+          currentPage : page,
+          hasNextPage : page *pageSize < totalexpense,
+          nextPage : page +1,
+          hasPreviousPage : page >1,
+          previousPage : page -1,
+          lastPage : Math.ceil(totalexpense/pageSize)});
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }catch(err){
+res.status(500).json(err);
+  }
+  
 };
+
 
 exports.delete_expense = async (req, res, next) => {
   const transac = await sequelize.transaction();
