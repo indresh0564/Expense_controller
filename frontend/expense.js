@@ -6,7 +6,7 @@ expenseList.addEventListener("click", deleteExpense);
 leaderboardBtn.addEventListener('click', updateLeaderboard);
 generateReportBtn.addEventListener('click', generateReport);
 
-window.addEventListener('load', showExpense());
+window.addEventListener('load', showExpense(1));
 
 const expensesPreferenceDropdown = document.getElementById('expensesPreference');
 
@@ -23,76 +23,17 @@ function showPagination({
   let buttonsHTML = []; // Create an array to store the pagination buttons
 
   if (hasPreviousPage) {
-      console.log("hasPreviousPage")
+      // console.log("hasPreviousPage")
       buttonsHTML.push(`<button class="btn btn-primary" onclick="showExpense(${previousPage})">Previous Page</button>`);
   }
 
   if (hasNextPage) {
-      console.log("hasNextPage")
+      // console.log("hasNextPage")
       buttonsHTML.push(`<button class="btn btn-primary" onclick="showExpense(${nextPage})">Next Page</button>`);
   }
 
   button.innerHTML = buttonsHTML.join(' ');
 }
-//show Leaderboard On screen
-
-// function showOnLeaderboard() {
-//   try {
-//     const inputEle = document.createElement("input");
-//     inputEle.value = "Show Leaderboard";
-//     inputEle.type = "button";
-
-//     inputEle.onclick = async (e) => {
-//       const token = localStorage.getItem("token");
-//       const leaderboard_list = await axios.get(
-//         "http://localhost:3000/leaderboard",
-//         { headers: { Authorization: token } }
-//       );
-
-//       var leaderboardEle = document.getElementById("leaderboard_id");
-//       leaderboardEle.innerHTML += "<h1>Leader Board</h1>";
-
-//       leaderboard_list.data.forEach((element) => {
-//         leaderboardEle.innerHTML += `<li>Name - ${
-//           element.name
-//         } TotalExpense - ${element.totalExpense || 0}</li>`;
-//       });
-//     };
-
-//     const download = document.createElement("input");
-//     download.value = "Download Expense";
-//     download.type = "button";
-
-//     download.onclick = (e) => {
-//       const token = localStorage.getItem("token");
-//       axios
-//         .get("http://localhost:3000/user/download", {
-//           headers: { Authorization: token },
-//         })
-//         .then((response) => {
-//           if (response.status === 201) {
-//             //the bcakend is essentially sending a download link
-//             //  which if we open in browser, the file would download
-//             var a = document.createElement("a");
-//             a.href = response.data.fileUrl;
-//             a.download = "myexpense.csv";
-//             a.click();
-//           } else {
-//             throw new Error(response.data.message);
-//           }
-//         })
-//         .catch((err) => {
-//           showError(err);
-//         });
-//     };
-
-//     document.getElementById("message").innerHTML = "you are a premium user";
-//     document.getElementById("message").appendChild(inputEle);
-//     document.getElementById("message").appendChild(download);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
 
 function generateReport(e){
         const token = localStorage.getItem("token");
@@ -211,9 +152,7 @@ function showOnScreen(obj) {
             "http://localhost:3000/leaderboard",
             { headers: { Authorization: token } }
           );
-          // const leaderBoardList = document.querySelector('.leaderboard-list');
-          // leaderBoardList.innerHTML = '';
-    
+          
           response.data.forEach(userDetail => {
             let output = `<tr>
             <td>${userDetail.name}</td>
@@ -267,12 +206,12 @@ async function showExpense(page){
 
 const expensePreference = localStorage.getItem('expensesPreference');
 
-    const pagesize = expensePreference ? parseInt(expensePreference) : 5;
+    const pagesize = expensePreference ? parseInt(expensePreference) : 10;
       if (!page || page < 1) {
          page = 1;
          }
-
-  await axios.get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
+    try{
+      await axios.get(`http://localhost:3000/get_expenses?page=${page}&pagesize=${pagesize}`, {
         headers: { Authorization: token },
       })
       .then((result) => {
@@ -285,6 +224,10 @@ const expensePreference = localStorage.getItem('expensesPreference');
       .catch((err) => {
         throw new Error(err);
       });
+    }catch(err){
+       console.log(err);
+    }
+  
 }
 
 window.addEventListener("DOMContentLoaded", (req, res) => {

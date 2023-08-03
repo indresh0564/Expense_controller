@@ -1,15 +1,17 @@
 const Order = require("../models/order");
 const RazorPay = require("razorpay");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();
+
 
 const purchasepremium = async (req, res) => {
   console.log(req.user);
 
   try {
     var rzp = new RazorPay({
-      key_id: "rzp_test_vUiUP8D1CSHAmu",
-      key_secret: "JVguI62oiY7weZixqrcvLNKD",
-    });
+      key_id:process.env.RAZORPAY_KEY_ID,
+      key_secret:process.env.RAZORPAY_KEY_SECRET,
+    })
     const amount = 2500;
     console.log(rzp);   
 

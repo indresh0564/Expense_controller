@@ -7,6 +7,7 @@ const User = require("../models/user");
 const forgotPassword = require("../models/forgotpassword");
 const { escape } = require("mysql");
 
+
 exports.forgotpassword = async (req, res) => {
   const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
@@ -61,6 +62,7 @@ exports.forgotpassword = async (req, res) => {
   }
 };
 
+
 exports.reset = async (req, res, next) => {
   const id = req.params.id;
 
@@ -85,6 +87,7 @@ exports.reset = async (req, res, next) => {
     res.end();
   }
 };
+
 
 exports.updatepassword = (req, res) => {
   const newPassword = req.query;
@@ -119,7 +122,6 @@ exports.updatepassword = (req, res) => {
 </html>`
                   );
                   res.end();
-                  // .json({message: 'Successfuly update the new password'})
                 })
                 .catch((err) => {
                   throw new Error(err);
