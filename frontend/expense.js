@@ -173,8 +173,8 @@ async function savetolocalstorage(e) {
     await axios.post("http://localhost:3000/expense", obj, {
       headers: { Authorization: token },
     });
-    e.target.reset();
 
+    e.target.reset();
     showOnScreen(obj);
   } catch (err) {
     console.log(err);
@@ -261,6 +261,8 @@ expensesPreferenceDropdown.addEventListener('change', function () {
 // show expenses on screen
 
 async function showExpense(page){
+  tbody.innerHTML = "";
+
   const token = localStorage.getItem("token");
 
 const expensePreference = localStorage.getItem('expensesPreference');
